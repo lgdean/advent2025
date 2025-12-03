@@ -1,7 +1,7 @@
 module Day03
     (
       doPart1,
---      doPart2
+      doPart2
     ) where
 
 import Data.Char (digitToInt)
@@ -28,3 +28,9 @@ largestJoltageBatteries n batteries =
 
 digits2Int :: [Int] -> Int
 digits2Int ds = foldl (\acc n -> acc*10+n) 0 ds
+
+doPart2 :: [Char] -> Int
+doPart2 input =
+  let batteryBanks = map (map digitToInt) $ lines input
+      joltages = map (digits2Int . largestJoltageBatteries 12) batteryBanks
+  in sum joltages
