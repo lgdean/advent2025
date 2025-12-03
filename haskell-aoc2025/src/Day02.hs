@@ -39,13 +39,10 @@ invalidIdsWithinRange (lower, upper)
           isInRange n = lowerInt <= n && n <= upperInt
           in filter isInRange $ map read candidates
 
-theMostEvenOne x y =
+theEvenOneIfAny x y =
   if isOdd x
-  then
-    if isOdd y
-    then trace "uh-oh" y
-    else y
-  else x
+  then if isOdd y then [] else [y]
+  else [x]
 
 part1UsingPart2Code :: (String, String) -> [Integer]
 part1UsingPart2Code (lower, upper)
@@ -55,12 +52,11 @@ part1UsingPart2Code (lower, upper)
       let lowerInt = read lower :: Integer
           upperInt = read upper :: Integer
           isInRange n = lowerInt <= n && n <= upperInt
-          theEvenLength = theMostEvenOne (length lower) (length upper)
-          partLengths = [theEvenLength `div` 2]
+          partLengths = map (flip div 2) (theEvenOneIfAny (length lower) (length upper))
           lengthsToTry = filter (\n -> length lower `divisibleBy` n || length upper `divisibleBy` n) partLengths
           allResults = concatMap (flip generateAssembled (head partLengths * 2, head partLengths * 2)) lengthsToTry
           uniqueResults = Set.filter isInRange $ Set.fromList $ map read allResults
-      in Set.toList $ trace (show uniqueResults) uniqueResults
+      in Set.toList uniqueResults
 
 part2invalidIdsWithinRange :: (String, String) -> [Integer]
 part2invalidIdsWithinRange (lower, upper)
@@ -74,7 +70,7 @@ part2invalidIdsWithinRange (lower, upper)
           lengthsToTry = filter (\n -> length lower `divisibleBy` n || length upper `divisibleBy` n) partLengths
           allResults = concatMap (flip generateAssembled (length lower, length upper)) lengthsToTry
           uniqueResults = Set.filter isInRange $ Set.fromList $ map read allResults
-      in Set.toList $ trace (show uniqueResults) uniqueResults
+      in Set.toList uniqueResults
 
 generateAssembled :: Int -> (Int, Int) -> [String]
 generateAssembled 0 _ = error "do not call with zero"

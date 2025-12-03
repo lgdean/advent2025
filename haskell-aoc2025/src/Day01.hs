@@ -4,14 +4,12 @@ module Day01
       doPart2
     ) where
 
-import Debug.Trace (trace)
-
 doPart1 :: [Char] -> Int
 doPart1 input =
   let rotations = map parseLine $ lines input
       initPosition = 50
       positions = applyRotations initPosition (map fst rotations)
-  in trace (show positions) $ length $ filter (==0) (map fst positions)
+  in length $ filter (==0) (map fst positions)
 
 applyRotations :: Int -> [Int -> Int] -> [(Int, Int)]
 applyRotations pos [] = [(pos,0)]
@@ -36,4 +34,4 @@ doPart2 input =
   let rotations = map parseLine $ lines input
       initPosition = 50
       positions = applyRotations initPosition (map fst rotations)
-  in trace (show positions) $ (sum $ map snd positions)
+  in (sum $ map snd positions)
