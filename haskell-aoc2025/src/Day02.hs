@@ -1,19 +1,26 @@
 module Day02
     (
       doPart1,
---      doPart2
+      doPart2
     ) where
 
-import Lib (digits, strip)
+import Lib (digits, divisibleBy, strip)
 
 import Data.List.Split (splitOn)
+import qualified Data.Set as Set
 
 import Debug.Trace (trace)
 
 doPart1 :: [Char] -> Integer
 doPart1 input =
   let ranges = map parseRange $ splitOn [','] input
-      results = map invalidIdsWithinRange ranges :: [[Integer]]
+      results = map part1UsingPart2Code ranges :: [[Integer]]
+  in sum $ concat results
+
+doPart2 :: [Char] -> Integer
+doPart2 input =
+  let ranges = map parseRange $ splitOn [','] input
+      results = map part2invalidIdsWithinRange ranges :: [[Integer]]
   in sum $ concat results
 
 -- no idea why I made it so complicated: premature optimization
@@ -31,6 +38,51 @@ invalidIdsWithinRange (lower, upper)
           candidates = map (\s -> s ++ s) candidateHalves
           isInRange n = lowerInt <= n && n <= upperInt
           in filter isInRange $ map read candidates
+
+theMostEvenOne x y =
+  if isOdd x
+  then
+    if isOdd y
+    then trace "uh-oh" y
+    else y
+  else x
+
+part1UsingPart2Code :: (String, String) -> [Integer]
+part1UsingPart2Code (lower, upper)
+  | (read lower :: Int) > read upper = []
+  | length upper > length lower + 1 = error "please write code for this case"
+  | otherwise =
+      let lowerInt = read lower :: Integer
+          upperInt = read upper :: Integer
+          isInRange n = lowerInt <= n && n <= upperInt
+          theEvenLength = theMostEvenOne (length lower) (length upper)
+          partLengths = [theEvenLength `div` 2]
+          lengthsToTry = filter (\n -> length lower `divisibleBy` n || length upper `divisibleBy` n) partLengths
+          allResults = concatMap (flip generateAssembled (head partLengths * 2, head partLengths * 2)) lengthsToTry
+          uniqueResults = Set.filter isInRange $ Set.fromList $ map read allResults
+      in Set.toList $ trace (show uniqueResults) uniqueResults
+
+part2invalidIdsWithinRange :: (String, String) -> [Integer]
+part2invalidIdsWithinRange (lower, upper)
+  | (read lower :: Int) > read upper = []
+  | length upper > length lower + 1 = error "please write code for this case"
+  | otherwise =
+      let lowerInt = read lower :: Integer
+          upperInt = read upper :: Integer
+          isInRange n = lowerInt <= n && n <= upperInt
+          partLengths = [1 .. length upper `div` 2]
+          lengthsToTry = filter (\n -> length lower `divisibleBy` n || length upper `divisibleBy` n) partLengths
+          allResults = concatMap (flip generateAssembled (length lower, length upper)) lengthsToTry
+          uniqueResults = Set.filter isInRange $ Set.fromList $ map read allResults
+      in Set.toList $ trace (show uniqueResults) uniqueResults
+
+generateAssembled :: Int -> (Int, Int) -> [String]
+generateAssembled 0 _ = error "do not call with zero"
+generateAssembled n (l1, l2) =
+  let parts = generateAll '1' '9' n
+      assembled1 = if l1 `divisibleBy` n && l1 > n then map (\s -> concat $ take (l1 `div` n) $ repeat s) parts else []
+      assembled2 = if l2 `divisibleBy` n then map (\s -> concat $ take (l2 `div` n) $ repeat s) parts else []
+  in assembled1 ++ assembled2
 
 generateAll :: Char -> Char -> Int -> [String]
 generateAll _ _ 0 = [""]
