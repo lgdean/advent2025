@@ -20,7 +20,6 @@ doPart2 :: [Char] -> Int
 doPart2 input =
   let grid = parseGrid input
       papers = Map.filter (== '@') grid
-      accessiblePapers = filter (`fewerThanFourPaperNeighbors` grid) $ Map.keys papers
       resultGrid = keepRemovingPaper grid
   in Map.size papers - Map.size (Map.filter (== '@') resultGrid)
 
