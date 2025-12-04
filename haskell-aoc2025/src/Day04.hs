@@ -1,11 +1,13 @@
 module Day04
     (
       doPart1,
---      doPart2
+      doPart2
     ) where
 
-import Data.Map (Map, findWithDefault)
+import Data.Map (Map)
 import qualified Data.Map.Strict as Map
+
+import Debug.Trace (trace)
 
 doPart1 :: [Char] -> Int
 doPart1 input =
@@ -13,6 +15,30 @@ doPart1 input =
       papers = Map.filter (== '@') grid
       accessiblePapers = filter (`fewerThanFourPaperNeighbors` grid) $ Map.keys papers
   in length accessiblePapers
+
+doPart2 :: [Char] -> Int
+doPart2 input =
+  let grid = parseGrid input
+      papers = Map.filter (== '@') grid
+      accessiblePapers = filter (`fewerThanFourPaperNeighbors` grid) $ Map.keys papers
+      resultGrid = keepRemovingPaper grid
+  in Map.size papers - Map.size (Map.filter (== '@') resultGrid)
+
+keepRemovingPaper :: Map (Int, Int) Char -> Map (Int, Int) Char
+keepRemovingPaper grid =
+  let papers = Map.filter (== '@') grid
+      accessiblePapers = filter (`fewerThanFourPaperNeighbors` grid) $ Map.keys papers
+      nextGrid = Map.filterWithKey (\k _ -> k `notElem` accessiblePapers) grid
+  in if null accessiblePapers
+     then trace "returning" $ grid
+     else trace ("keep going with grid of size " ++ show (Map.size nextGrid)) $ keepRemovingPaper nextGrid
+
+--keepRemovingPaper :: Map (Int, Int) Char -> Map (Int, Int) Char
+--keepRemovingPaper grid
+--  | null accessiblePapers = grid
+--  | otherwise = keepRemovingPaper $ Map.filterWithKey (\k _ -> k `notElem` accessiblePapers) grid
+--  where papers = Map.filter (== '@') grid
+--        accessiblePapers = filter (`fewerThanFourPaperNeighbors` grid) $ Map.keys papers
 
 hasPaper :: (Int, Int) -> Map (Int, Int) Char -> Bool
 hasPaper pos grid =
