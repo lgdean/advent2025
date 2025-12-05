@@ -28,8 +28,6 @@ inRange (lower, upper) x =
 doPart2 :: [Char] -> Int
 doPart2 ranges =
   let freshRanges = map parseRange $ lines ranges
-      (lowers, uppers) = unzip freshRanges
-      (minFresh, maxFresh) = (minimum lowers, maximum uppers)
       fancyRanges = map (uncurry (+=+)) freshRanges
       betterRanges = joinRanges fancyRanges
       rangeSizes = map rangeSize betterRanges
