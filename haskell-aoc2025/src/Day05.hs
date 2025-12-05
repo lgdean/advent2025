@@ -1,11 +1,9 @@
 module Day05
     (
       doPart1,
---      doPart2
+      doPart2
     ) where
 
-import Data.Map (Map)
-import qualified Data.Map.Strict as Map
 import Data.List.Split (splitOn)
 
 import Debug.Trace (trace)
@@ -17,7 +15,6 @@ doPart1 ranges input =
       ingredients = map read $ lines input
   in length $ filter isFresh ingredients
 
-
 -- Data.Range exists, and perhaps I will want to use it, hm
 
 inRange :: (Int, Int) -> Int -> Bool
@@ -26,9 +23,13 @@ inRange (lower, upper) x =
   then trace ("oh!!") lower <= x && x <= upper
   else lower <= x && x <= upper
 
+doPart2 :: [Char] -> Int
+doPart2 ranges =
+  let freshRanges = map parseRange $ lines ranges
+  in length freshRanges
 
 parseRange :: String -> (Int, Int)
 parseRange line =
   case splitOn ['-'] line of
     [x, y] -> (read x, read y)
-    otherwise -> error ("cannot parse range: " ++ line)
+    _ -> error ("cannot parse range: " ++ line)

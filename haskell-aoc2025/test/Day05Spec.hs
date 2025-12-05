@@ -18,11 +18,11 @@ spec = do
       input <- readFile "inputs/day05-available"
       doPart1 ranges input `shouldBe` 567
 
---  describe "Part 2" $ do
---    it "can handle given example" $ do
---      input <- readFile "inputs/day05-example"
---      doPart2 input `shouldBe` 0
---
+  describe "Part 2" $ do
+    it "can handle given example" $ do
+      input <- readFile "inputs/day05-ranges-example"
+      doPart2 input `shouldBe` 14
+
 --    it "can solve Part 2" $ do
---      input <- readFile "inputs/day05"
+--      input <- readFile "inputs/day05-ranges"
 --      doPart2 input `shouldBe` 0
