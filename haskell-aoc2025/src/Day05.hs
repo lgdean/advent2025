@@ -5,6 +5,8 @@ module Day05
     ) where
 
 import Data.List.Split (splitOn)
+import Data.Range ((+=+), joinRanges, Range(SpanRange))
+import qualified Data.Range as Range
 
 import Debug.Trace (trace)
 
@@ -26,7 +28,16 @@ inRange (lower, upper) x =
 doPart2 :: [Char] -> Int
 doPart2 ranges =
   let freshRanges = map parseRange $ lines ranges
-  in length freshRanges
+      (lowers, uppers) = unzip freshRanges
+      (minFresh, maxFresh) = (minimum lowers, maximum uppers)
+      fancyRanges = map (uncurry (+=+)) freshRanges
+      betterRanges = joinRanges fancyRanges
+      rangeSizes = map rangeSize betterRanges
+  in sum rangeSizes
+
+rangeSize :: Range Int -> Int
+rangeSize (SpanRange (Range.Bound x _) (Range.Bound y _)) = 1+y-x
+rangeSize _ = error "sorry, cannot handle"
 
 parseRange :: String -> (Int, Int)
 parseRange line =

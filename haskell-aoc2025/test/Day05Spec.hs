@@ -23,6 +23,6 @@ spec = do
       input <- readFile "inputs/day05-ranges-example"
       doPart2 input `shouldBe` 14
 
---    it "can solve Part 2" $ do
---      input <- readFile "inputs/day05-ranges"
---      doPart2 input `shouldBe` 0
+    it "can solve Part 2" $ do
+      input <- readFile "inputs/day05-ranges"
+      doPart2 input `shouldBe` 354149806372909
