@@ -5,6 +5,7 @@ module Day07
     ) where
 
 import Data.List (elemIndex, nub)
+import qualified Data.Map.Strict as Map
 import Data.Maybe (fromJust)
 
 doPart1 :: [Char] -> Int
@@ -31,13 +32,24 @@ oneResult oneX rowContent =
 doPart2 :: [Char] -> Int
 doPart2 input =
   let allLines = lines input
-      startX = fromJust $ elemIndex 'S' $ head allLines
-      results = scanl whatHappens2 (0, [startX]) (tail allLines)
-  in length $ snd $ head $ reverse results
+      firstState = zip [0..] $ map (\c -> if c=='S' then 1 else 0) $ head allLines
+      results = scanl whatHappens2 (0, firstState) (tail allLines)
+      finalResult = snd $ head $ reverse results
+  in sum $ map snd finalResult
 
--- given current beam x positions and a row, returns how many split, and next x-positions
-whatHappens2 :: (Int, [Int]) -> [Char] -> (Int, [Int])
+-- given current beam x positions and a row with counts, returns some number, and next x-positions
+-- I'm sure that was a very clear x-position :joy:
+whatHappens2 :: (Int, [(Int, Int)]) -> [Char] -> (Int, [(Int, Int)])
 whatHappens2 (_, beamX) rowContent =
-  let results = map (flip oneResult rowContent)  beamX
-      nSplits = length $ filter ((>1) . length) results
-  in (nSplits, concat results)
+  let nextRowComponents = zipWith expand beamX rowContent
+      nextRow = contract nextRowComponents
+  in (0, nextRow)
+
+expand :: (Int, Int) -> Char -> [(Int, Int)]
+expand (xpos, count) '^' = [(xpos-1, count), (xpos, 0), (xpos+1, count)]
+expand (xpos, count)  _  = [(xpos, count)]
+
+contract :: [[(Int, Int)]] -> [(Int, Int)]
+contract lists =
+  let theMaps = map Map.fromList lists
+  in Map.toList $ Map.unionsWith (+) theMaps
