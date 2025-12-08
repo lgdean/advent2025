@@ -27,13 +27,18 @@ doPart1 howMany input =
 buildUpCircuits :: [Set Location] -> [(Location, Location)] -> [Set Location]
 buildUpCircuits circuits [] = circuits
 buildUpCircuits circuits ((a,b) : rest) =
+  let nextState = circuitBuildingStep circuits (a,b)
+  in buildUpCircuits nextState rest
+
+circuitBuildingStep :: [Set Location] -> (Location, Location) -> [Set Location]
+circuitBuildingStep circuits (a,b) =
   let (aCircuitList, noA) = partition (Set.member a) circuits
       (bCircuitList, noB) = partition (Set.member b) circuits
   in case (aCircuitList, bCircuitList) of
-    ([], []) -> buildUpCircuits (Set.fromList [a,b] : circuits) rest
-    ([], [bCircuit]) -> buildUpCircuits (Set.insert a bCircuit : noB) rest
-    ([aCircuit], []) -> buildUpCircuits (Set.insert b aCircuit : noA) rest
-    ([aCircuit], [bCircuit]) -> buildUpCircuits ((Set.union aCircuit bCircuit) : (filter (/= aCircuit) noB)) rest
+    ([], []) -> (Set.fromList [a,b] : circuits)
+    ([], [bCircuit]) -> (Set.insert a bCircuit : noB)
+    ([aCircuit], []) -> (Set.insert b aCircuit : noA)
+    ([aCircuit], [bCircuit]) -> ((Set.union aCircuit bCircuit) : (filter (/= aCircuit) noB))
     _ -> error "programmer surprise"
 
 -- takes in a sorted list of locations
