@@ -1,7 +1,7 @@
 module Day08
     (
       doPart1,
---      doPart2
+      doPart2
     ) where
 
 import Data.List (partition, sort)
@@ -12,6 +12,17 @@ import qualified Data.Set as Set
 import Debug.Trace (trace)
 
 type Location = (Int, Int, Int)
+
+doPart2 :: [Char] -> Int
+doPart2 input =
+  let allLines = lines input
+      boxLocations = map parse3dCoord allLines
+      distances = buildDistances $ sort boxLocations
+      pairsToConnect = map snd $ sort distances
+      circuitStates = scanl circuitBuildingStep (map Set.singleton boxLocations) pairsToConnect
+      howManySteps = length $ takeWhile ((>1) . length) circuitStates
+      lastPair@((x1,_,_),(x2,_,_)) = pairsToConnect !! (howManySteps-1)
+  in trace (show lastPair) $ x1*x2
 
 doPart1 :: Int -> [Char] -> Int
 doPart1 howMany input =
