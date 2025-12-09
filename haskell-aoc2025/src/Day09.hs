@@ -1,12 +1,57 @@
 module Day09
     (
       doPart1,
---      doPart2
+      doPart2
     ) where
 
+import Data.List (nub, sort)
 import Data.List.Split (splitOn)
+import Data.Set (Set)
+import qualified Data.Set as Set
+
+import Debug.Trace (trace)
 
 type Location = (Int, Int)
+
+doPart2 :: [Char] -> Int
+doPart2 input =
+  let allLines = lines input
+      redTileLocations = map parse2dCoord allLines
+      redsShifted = tail redTileLocations ++ [head redTileLocations]
+      outline = Set.fromList $ concat $ zipWith drawLine redTileLocations redsShifted
+      everyCornerY = nub $ sort $ map snd redTileLocations
+      everyCornerX = nub $ sort $ map fst redTileLocations
+      -- there is of course room to improve performance here if needed
+      outlineSubset = Set.filter (\(x,y) -> x `elem` everyCornerX && y `elem` everyCornerY) outline
+      redPairs = trace (show outlineSubset) [(a,b) | a <- redTileLocations, b <- redTileLocations, a < b, allIn outlineSubset everyCornerY (a,b)]
+      areas = map (uncurry area) redPairs
+  in trace (show redPairs) $ maximum areas
+
+-- I believe this works because I graphed the data and looked at it
+allIn :: Set Location -> [Int] -> (Location, Location) -> Bool
+allIn outline relevantYs ((a, b), (c, d)) =
+  let smallerY = min b d
+      biggerY = max b d
+--      yRange = filter (`elem` relevantYs) [min b d .. max b d]
+      yRange = takeWhile (<= biggerY) $ dropWhile (< smallerY) relevantYs
+      smallerX = min a c
+      biggerX = max a c
+      isOK y = (\((x1,_),(x2,_)) -> x1 <= smallerX && biggerX <= x2) $ horizontalLineEnds outline y
+  in all isOK yRange
+
+horizontalLineEnds :: Set Location -> Int -> (Location, Location)
+horizontalLineEnds outline y =
+  let ends = Set.toAscList $ Set.filter ((==y) . snd) outline
+  in case ends of
+    [a, b] -> (a, b)
+    (a : _ : rest) -> (a, head (reverse rest)) -- should be ok per visual inspection
+    _      -> error ("did not consider this case: " ++ show ends ++ " for " ++ show y ++ " of " ++ show outline)
+
+drawLine :: Location -> Location -> [Location]
+drawLine (a, b) (c, d)
+  | a == c = [(a, y) | y <- [min b d .. max b d]]
+  | b == d = [(x, b) | x <- [min a c .. max a c]]
+  | otherwise = error ("cannot handle line: " ++ show (a,b) ++ ", " ++ show (c,d))
 
 doPart1 :: [Char] -> Int
 doPart1 input =
