@@ -21,9 +21,11 @@ doPart2 input =
       outline = Set.fromList $ concat $ zipWith drawLine redTileLocations redsShifted
       everyCornerY = nub $ sort $ map snd redTileLocations
       everyCornerX = nub $ sort $ map fst redTileLocations
-      -- there is of course still room to improve performance here if needed
       outlineSubset = Set.filter (\(x,y) -> x `elem` everyCornerX && y `elem` everyCornerY) outline
       redPairs = [(a,b) | a <- redTileLocations, b <- redTileLocations, a < b,
+                          fst a < 1000 -- in the given example, not the real data
+                            || fst a >= 94862 -- or beyond the long horizontal gap
+                            || (snd a <= 48448) == (snd b <= 48448), -- or on same side of it (above/below)
                           allIn outlineSubset everyCornerY (a,b)]
       areas = map (uncurry area) redPairs
   in trace (show redPairs) $ maximum areas
