@@ -1,0 +1,26 @@
+{-# LANGUAGE OverloadedStrings #-}
+module Day09Spec (spec) where
+
+import Test.Hspec
+
+import Day09
+
+spec :: Spec
+spec = do
+  describe "Part 1" $ do
+    it "can handle given example" $ do
+      input <- readFile "inputs/day09-example"
+      doPart1 input `shouldBe` 50
+
+    it "can solve Part 1" $ do
+      input <- readFile "inputs/day09"
+      doPart1 input `shouldBe` 4772103936
+
+--  describe "Part 2" $ do
+--    it "can handle given example" $ do
+--      input <- readFile "inputs/day09-example"
+--      doPart2 input `shouldBe` 0
+--
+--    it "can solve Part 2" $ do
+--      input <- readFile "inputs/day09"
+--      doPart2 input `shouldBe` 0
