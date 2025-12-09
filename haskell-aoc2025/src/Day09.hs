@@ -21,9 +21,10 @@ doPart2 input =
       outline = Set.fromList $ concat $ zipWith drawLine redTileLocations redsShifted
       everyCornerY = nub $ sort $ map snd redTileLocations
       everyCornerX = nub $ sort $ map fst redTileLocations
-      -- there is of course room to improve performance here if needed
+      -- there is of course still room to improve performance here if needed
       outlineSubset = Set.filter (\(x,y) -> x `elem` everyCornerX && y `elem` everyCornerY) outline
-      redPairs = trace (show outlineSubset) [(a,b) | a <- redTileLocations, b <- redTileLocations, a < b, allIn outlineSubset everyCornerY (a,b)]
+      redPairs = [(a,b) | a <- redTileLocations, b <- redTileLocations, a < b,
+                          allIn outlineSubset everyCornerY (a,b)]
       areas = map (uncurry area) redPairs
   in trace (show redPairs) $ maximum areas
 
@@ -32,9 +33,8 @@ allIn :: Set Location -> [Int] -> (Location, Location) -> Bool
 allIn outline relevantYs ((a, b), (c, d)) =
   let smallerY = min b d
       biggerY = max b d
---      yRange = filter (`elem` relevantYs) [min b d .. max b d]
       yRange = takeWhile (<= biggerY) $ dropWhile (< smallerY) relevantYs
-      smallerX = min a c
+      smallerX = min a c -- probably unnecessary due to sorting; keeping it for clarity
       biggerX = max a c
       isOK y = (\((x1,_),(x2,_)) -> x1 <= smallerX && biggerX <= x2) $ horizontalLineEnds outline y
   in all isOK yRange
