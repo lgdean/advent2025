@@ -3,7 +3,7 @@ module Day10
       fewestButtonPresses,
       doPart1,
       fewestButtonPresses2,
---      doPart2
+      doPart2
     ) where
 
 import Data.List.Split (splitOn)
@@ -36,17 +36,24 @@ createCombos n xs = [x:rest | x <- xs, rest <- createCombos (n-1) xs]
 
 doPart1 :: [Char] -> Int
 doPart1 input =
-  let machines = map parseLine $ lines input
+  let machines = map (\(a,b,_) -> (a,b)) $ map parseLine $ lines input
   in sum $ map (uncurry fewestButtonPresses) machines
 
-parseLine :: String -> ([Char], [[Int]])
+doPart2 :: [Char] -> Int
+doPart2 input =
+  let machines = map (\(_,b,c) -> (c,b)) $ map parseLine $ lines input
+  in sum $ map (uncurry fewestButtonPresses2) machines
+
+parseLine :: String -> ([Char], [[Int]], [Int])
 parseLine line =
   let parts = splitOn " " line
   in case parts of
     [] -> error "empty line?"
     [_] -> error "just one item in line"
     [_, _] -> error "still not enough"
-    (pattern : rest) -> (reverse $ tail $ reverse $ tail pattern, map parseButton $ tail $ reverse rest)
+    (pattern : rest) -> (reverse $ tail $ reverse $ tail pattern,
+                         map parseButton $ tail $ reverse rest,
+                         parseButton $ head $ reverse rest)
 
 parseButton :: String -> [Int]
 parseButton input =
