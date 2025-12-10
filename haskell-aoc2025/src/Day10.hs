@@ -5,19 +5,17 @@ module Day10
 --      doPart2
     ) where
 
-import Data.List (nub, sort)
 import Data.List.Split (splitOn)
 
-import Debug.Trace (trace)
+--import Debug.Trace (trace)
 
 fewestButtonPresses :: [Char] -> [[Int]] -> Int
 fewestButtonPresses pattern buttons =
   let comboTimes = createCombos (length buttons) [0,1] :: [[Int]]
       combos = map (\c -> zipWith replicate c buttons) comboTimes :: [[[[Int]]]]
       buttonPressResult combo = [if odd (length $ filter (==x) (concat $ concat combo)) then '#' else '.' | x <- [0..length pattern-1]]
-      comboResults = trace (show combos) $ map buttonPressResult combos
-      goodCombos = trace (show comboResults) $ filter ((==pattern) . buttonPressResult) combos
-      comboLengths = trace (show goodCombos) $ map (length . concat) goodCombos
+      goodCombos = filter ((==pattern) . buttonPressResult) combos
+      comboLengths = map (length . concat) goodCombos
   in minimum comboLengths
 
 -- surely doable with replicateM or the like
