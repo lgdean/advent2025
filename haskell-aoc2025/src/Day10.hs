@@ -2,6 +2,7 @@ module Day10
     (
       fewestButtonPresses,
       doPart1,
+      fewestButtonPresses2,
 --      doPart2
     ) where
 
@@ -14,6 +15,15 @@ fewestButtonPresses pattern buttons =
   let comboTimes = createCombos (length buttons) [0,1] :: [[Int]]
       combos = map (\c -> zipWith replicate c buttons) comboTimes :: [[[[Int]]]]
       buttonPressResult combo = [if odd (length $ filter (==x) (concat $ concat combo)) then '#' else '.' | x <- [0..length pattern-1]]
+      goodCombos = filter ((==pattern) . buttonPressResult) combos
+      comboLengths = map (length . concat) goodCombos
+  in minimum comboLengths
+
+fewestButtonPresses2 :: [Int] -> [[Int]] -> Int
+fewestButtonPresses2 pattern buttons =
+  let comboTimes = createCombos (length buttons) [0 .. maximum pattern] :: [[Int]] -- combinatorial explosion! oh no
+      combos = map (\c -> zipWith replicate c buttons) comboTimes :: [[[[Int]]]]
+      buttonPressResult combo = [(length $ filter (==x) (concat $ concat combo)) | x <- [0..length pattern-1]]
       goodCombos = filter ((==pattern) . buttonPressResult) combos
       comboLengths = map (length . concat) goodCombos
   in minimum comboLengths
