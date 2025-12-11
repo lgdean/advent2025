@@ -1,7 +1,7 @@
 module Day11
     (
       doPart1,
---      doPart2
+      doPart2
     ) where
 
 import Lib (strip)
@@ -33,3 +33,10 @@ parseLine line =
     [] -> error "empty line?"
     [_] -> error "just one item in line"
     (fromDevice : rest) -> (fromDevice, splitOn " " $ strip $ head rest)
+
+doPart2 :: [Char] -> Int
+doPart2 input =
+  let deviceMap = Map.fromList $ map parseLine $ lines input
+      paths = pathsFrom deviceMap Set.empty "svr"
+      relevantPaths = filter (\p -> "dac" `elem` p && "fft" `elem` p) paths
+  in length relevantPaths
