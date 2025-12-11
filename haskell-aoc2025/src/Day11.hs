@@ -22,9 +22,9 @@ doPart1 input =
 
 pathsFrom :: Map String [String] -> Set String -> String -> [[String]]
 pathsFrom _ _ "out" = [["out"]]
-pathsFrom pathMap seenSoFar src
+pathsFrom outputMap seenSoFar src
   | src `Set.member` seenSoFar = [] -- cycle detected
-  | otherwise = map (src:) $ concatMap (pathsFrom pathMap (Set.insert src seenSoFar)) $ Map.findWithDefault [] src pathMap
+  | otherwise = map (src:) $ concatMap (pathsFrom outputMap (Set.insert src seenSoFar)) $ Map.findWithDefault [] src outputMap
 
 parseLine :: String -> (String, [String])
 parseLine line =
